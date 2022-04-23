@@ -25,10 +25,12 @@ class Main:
 
     def __init__(self) -> None:
         self.utils = mechanics.Utils()
+        self.schedule = mechanics.Schedule(self.utils)
 
     def main(self):
         """The main method of the program. Controls the main flow!"""
         self.utils.setup()
+        self.schedule.load_schedule()
 
 
 if __name__ == "__main__":
