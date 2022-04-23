@@ -1,3 +1,7 @@
 ---
 
 folder_location: './schedules/'
+text_to_speech:
+  rate: 200 # This is how fast the tts speaks. 200 is default and regular.
+  volume: 1.0 # This is how loud the tts is. 1.0 is Max, 0.0 is silent
+  voice: 1 # 1 is for a female voice. Change to 0 for a male voice

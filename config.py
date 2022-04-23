@@ -2,7 +2,8 @@ import yaml
 from os.path import exists
 
 default = {
-    "folder_location": "./schedules/"
+    "folder_location": "./schedules/",
+    "text_to_speech": {'rate': 200, 'volume': 1.0, 'voice': 1} 
 }
 
 def load_yaml() -> dict:
