@@ -1,12 +1,13 @@
 """File responsible for most of the mechanics that will be used throughout this program."""
 
-from dataclasses import dataclass, field
 import os
 import pyttsx3
 import time
 import errors
 
+from dataclasses import dataclass, field
 from config import load_yaml
+from threading import Thread
 
 config = load_yaml()
 
@@ -28,6 +29,7 @@ class Utils:
         setup(): Used to setup all data that the program will need to function.
         get_file_name(day:str): Returns the path to the file matching the given day
         get_current_day(): Returns the current day as a title cased String.
+        thread_this_func(func, *args): Makes a thread for a passed function and starts it.
     """
 
     def __init__(self) -> None:
@@ -51,21 +53,37 @@ class Utils:
 
         self.speech.say_and_print("Everything has been setup correctly!!")
 
-    def get_file_name(self, day:str):
+    def get_file_name(self, day:str) -> str:
         """Returns the path to the filename matching the given day.
         
         Args:
-            day (str): The day whose filepath is requested."""
+            day (str): The day whose filepath is requested.
+            
+        Returns:
+            str"""
 
         return os.path.join(Constants.folder_path, day + ".txt")
 
-    def get_current_day(self):
-        """Returns the current day."""
+    def get_current_day(self) -> str:
+        """Returns the current day.
+        
+        Returns:
+            str"""
         short_day = time.ctime().split(" ")[0]
         for day in Constants.days:
             if day.startswith(short_day.title()):
                 return day 
         raise errors.NonExistentDay(short_day, "\nctime bugging?")
+
+    def thread_this_func(self, func, *args):
+        """Makes a thread for the passed function and starts it.
+        
+        Args:
+            func: The function to be threaded.
+            *args: Any extra arguments the function may need"""
+
+        thread = Thread(target=func, args=args, daemon=True)
+        thread.start()
 
 class Speech:
     """Class responsible for the setup and handling of the Text To Speech
@@ -110,21 +128,24 @@ class Schedule:
     """Class which actually manages everything relating to the schedule keeping.
     
     Attrs:
-        utils (Utils) 
+        utils (Utils): An instance of the Utils class.
         tasks(dict): The schedule for the current day.
+        current_day(str): The current day
     Methods:
         load_schedule(): Method used to load the current day's schedule into memory
+        watch_the_clock(): Method used for watching the clock, to determine when a new day has begun 
     """
 
     def __init__(self, utils:Utils) -> None:
         self.utils = utils
         self.tasks = {}
+        self.current_day = self.utils.get_current_day()
+        self.utils.thread_this_func(self.watch_the_clock)
 
     def load_schedule(self):
         """Method used to load the current schedule into memory."""
-        current_day = self.utils.get_current_day()
 
-        filename = self.utils.get_file_name(current_day.title())
+        filename = self.utils.get_file_name(self.current_day.title())
         with open(filename) as fp:
             lines = fp.readlines()
         
@@ -144,3 +165,15 @@ class Schedule:
 
         self.tasks = tasks
         print(tasks)
+
+    def watch_the_clock(self):
+        """Method used to track the current day, and detect when the day changes. Will load the corresponding schedule."""
+        while True:
+            current_day = self.utils.get_current_day()
+            if current_day == self.current_day:
+                time.sleep(120)
+                continue
+
+            self.current_day = current_day
+            self.utils.speech.say("It's a new day and a new schedule!")
+            self.load_schedule()
