@@ -1,4 +1,3 @@
 ---
 
-constants:
-  folder_location: './schedules/'
+folder_location: './schedules/'
