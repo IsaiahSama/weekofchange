@@ -15,4 +15,8 @@ def load_yaml() -> dict:
     with open("config.yaml", "r") as fp:
         config = yaml.safe_load(fp)
 
+    for key in default.keys():
+        if key not in config:
+            config[key] = default[key]
+
     return config
