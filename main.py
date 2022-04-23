@@ -7,8 +7,30 @@ if not (v.major >= 3 and v.minor >= 10):
     raise SystemExit
 
 try:
-    pass
+    import mechanics
 except ImportError as err:
     print("Missing libraries:",err)
     input("Press enter to close: ")
     raise SystemExit
+
+
+class Main:
+    """The main class for the program.
+    
+    Attrs:
+    
+    Methods:
+        main(): The main method of the Program.
+        """
+
+    def __init__(self) -> None:
+        self.utils = mechanics.Utils()
+
+    def main(self):
+        """The main method of the program. Controls the main flow!"""
+        self.utils.setup()
+
+
+if __name__ == "__main__":
+    main = Main()
+    main.main()
