@@ -130,9 +130,9 @@ class Schedule:
         
         tasks = {}
         for line in lines:
+            line = line.strip("\n").strip()
             if not line or line.startswith("#"): continue
             try:
-                line = line.strip()
                 start_time = line.split(':')[0]
                 if not start_time.isnumeric(): raise errors.BadDayInformation(line, filename, f"Provided time, {start_time} was not a number.")
                 start_time = int(start_time)
@@ -144,4 +144,3 @@ class Schedule:
 
         self.tasks = tasks
         print(tasks)
-
