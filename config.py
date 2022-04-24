@@ -10,6 +10,9 @@ def load_yaml() -> dict:
     """Function used to load in yaml, and return the result"""
     if not exists("config.yaml"):
         print("Configuration file is missing. Using defaults.")
+        with open("config.yaml", "w") as fp:
+            fp.write("---\n\n")
+            yaml.safe_dump(default, fp)
         return default
     
     with open("config.yaml", "r") as fp:
