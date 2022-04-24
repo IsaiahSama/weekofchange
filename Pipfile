@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 pyttsx3 = "*"
+pyyaml = "*"
+wheel = "*"
 
 [dev-packages]
 
