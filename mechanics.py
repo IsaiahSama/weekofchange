@@ -29,6 +29,8 @@ class Utils:
         setup(): Used to setup all data that the program will need to function.
         get_file_name(day:str): Returns the path to the file matching the given day
         get_current_day(): Returns the current day as a title cased String.
+        get_current_time(): Returns the current time in 24hr format (1300 instead of 13:00)
+        get_twelve_time(): Returns the time in 12 hour format.
         thread_this_func(func, *args): Makes a thread for a passed function and starts it.
     """
 
@@ -74,6 +76,31 @@ class Utils:
             if day.startswith(short_day.title()):
                 return day 
         raise errors.NonExistentDay(short_day, "\nctime bugging?")
+
+    def get_current_time(self) -> int:
+        """Returns the current time.
+        
+        Returns:
+            int"""
+
+        localtime = time.localtime()
+        hour, minutes = str(localtime.tm_hour), str(localtime.tm_min)
+        if len(hour) <= 1:
+            while len(hour) != 2:
+                hour = "0" + hour
+        if len(minutes) <= 1:
+            while len(minutes) != 2:
+                minutes = "0" + hour
+        return hour + minutes
+
+    def get_twelve_time(self, ftime:int) -> tuple[int, int]:
+        """Returns the time in classic 12 hour format"""
+        stime = str(ftime)
+        hour = stime[:-2]
+        minutes = stime[-2:]
+        if int(hour) > 12:
+            hour = str(int(hour) - 12)
+        return hour, minutes
 
     def thread_this_func(self, func, *args):
         """Makes a thread for the passed function and starts it.
@@ -130,18 +157,25 @@ class Schedule:
     Attrs:
         utils (Utils): An instance of the Utils class.
         tasks(dict): The schedule for the current day.
+        times (list): A sorted list of times for the events on the current days
         current_day(str): The current day
     Methods:
         load_schedule(): Method used to load the current day's schedule into memory
         watch_the_clock(): Method used for watching the clock, to determine when a new day has begun 
+        track(): Used to track the schedule for the current day.
     """
 
     def __init__(self, utils:Utils) -> None:
         self.utils = utils
         self.tasks = {}
+        self.times = []
         self.current_day = self.utils.get_current_day()
+        
+    def start_threads(self):
+        """All threaded functions for this class that are to be threaded, goes here."""
         self.utils.thread_this_func(self.watch_the_clock)
-
+        self.utils.thread_this_func(self.track)
+        
     def load_schedule(self):
         """Method used to load the current schedule into memory."""
 
@@ -164,7 +198,7 @@ class Schedule:
             tasks[start_time] = task
 
         self.tasks = tasks
-        print(tasks)
+        self.times = sorted(tasks)
 
     def watch_the_clock(self):
         """Method used to track the current day, and detect when the day changes. Will load the corresponding schedule."""
@@ -173,7 +207,25 @@ class Schedule:
             if current_day == self.current_day:
                 time.sleep(120)
                 continue
-
+            
             self.current_day = current_day
             self.utils.speech.say("It's a new day and a new schedule!")
             self.load_schedule()
+
+    def track(self):
+        """Method used to track the schedule for the current day"""
+        
+        self.times = [time for time in self.times if time >= int(self.utils.get_current_time())]
+        while True:
+            if not self.times:
+                self.utils.speech.say_and_print("Congratulations. Seems like we're all done for today!")
+            current_time = int(self.utils.get_current_time())
+            if current_time not in self.times:
+                time.sleep(40)
+                continue
+            
+            self.utils.speech.say_and_print(f"The time is {' '.join(self.utils.get_twelve_time(current_time))}. Your task is {self.tasks[current_time]}")
+            time.sleep(40)
+            self.utils.speech.say_and_print(f"The time is {' '.join(self.utils.get_twelve_time(current_time))}. Your task is {self.tasks[current_time]}")
+
+            self.times.remove(current_time)
