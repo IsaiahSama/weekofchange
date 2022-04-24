@@ -1,6 +1,5 @@
 import sys
 from time import sleep
-import speech_recognition as sr
 
 v = sys.version_info
 if not (v.major >= 3 and v.minor >= 10):

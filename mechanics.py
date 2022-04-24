@@ -4,7 +4,6 @@ import os
 import pyttsx3
 import time
 import errors
-import speech_recognition as sr
 
 from dataclasses import dataclass, field
 from config import load_yaml
