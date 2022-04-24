@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 
 v = sys.version_info
 if not (v.major >= 3 and v.minor >= 10):
@@ -18,19 +19,25 @@ class Main:
     """The main class for the program.
     
     Attrs:
-    
+        utils (Utils): An instance of the Utils class
+        schedule (Schedule): An instance of the Schedule class
     Methods:
         main(): The main method of the Program.
         """
 
     def __init__(self) -> None:
-        self.utils = mechanics.Utils()
-        self.schedule = mechanics.Schedule(self.utils)
+        self.utils = None
+        self.schedule = None
 
     def main(self):
         """The main method of the program. Controls the main flow!"""
+        self.utils = mechanics.Utils()
         self.utils.setup()
+        self.schedule = mechanics.Schedule(self.utils)
         self.schedule.load_schedule()
+        self.schedule.start_threads()
+        while True:
+            sleep(5)
 
 
 if __name__ == "__main__":
