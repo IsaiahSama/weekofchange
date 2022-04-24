@@ -1,5 +1,6 @@
 import sys
 from time import sleep
+import speech_recognition as sr
 
 v = sys.version_info
 if not (v.major >= 3 and v.minor >= 10):
@@ -36,7 +37,28 @@ class Main:
         self.schedule = mechanics.Schedule(self.utils)
         self.schedule.load_schedule()
         self.schedule.start_threads()
+        
+        # recog = mechanics.SpeechRecog()
+
         while True:
+            # try:
+            #     spoken = recog.listen()
+            # except sr.RequestError as err:
+            #     print("An error has occurred", err)
+            # except KeyboardInterrupt:
+            #     raise SystemExit
+            # except:
+            #     continue
+            
+            # if spoken.lower() == "schedule":
+            #     try:
+            #         recog.listen()
+            #     except sr.UnknownValueError:
+            #         self.utils.speech.say("Apologies. I have no idea what you asked!")
+            #     except sr.RequestError as err:
+            #         self.utils.speech.say("Apologies. Seems there is a request error. I have sent it to the screen for your viewing.")
+            #         print(err)
+
             sleep(5)
 
 

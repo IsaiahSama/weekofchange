@@ -150,7 +150,6 @@ class Speech:
         Args:
             message(str): The message to be queue."""
 
-        print(message, "has been added to the queue.")
         self.messages.append(message)
         
 
@@ -167,7 +166,6 @@ class Speech:
         """Reads a message from the queue"""
 
         while True:
-            print(self.messages)
             while not self.messages: time.sleep(0.1)
             message = self.messages.pop(0)
             engine = self.setup_engine()
@@ -175,6 +173,47 @@ class Speech:
             engine.runAndWait()
             engine.stop()
 
+# class SpeechRecog:
+#     """Class used to manage recognition of speech and executing commands.
+    
+#     Attrs:
+    
+#     Methods:
+    
+#     """
+
+#     def __init__(self) -> None:
+#         pass
+
+#     def listen(self) -> str:
+#         """Method used to listen for voice input.
+        
+#         Raises:
+#             speechRecognition.UnknownValueError
+#             speechRecognition.RequestError
+#         Returns:
+#             str"""
+
+#         r = sr.Recognizer()
+
+#         with sr.Microphone() as source:
+#             r.adjust_for_ambient_noise()
+#             command = r.listen(source)
+        
+#         return self.process(r.recognize_google(command))
+#         # return "this"
+            
+
+#     def process(self, command:str) -> str:
+#         """Method used to proccess a given command.
+        
+#         Args:
+#             command (str): The command to be processed.
+            
+#         Returns:
+#             str"""
+#         print(command)
+#         return command
 
 class Schedule:
     """Class which actually manages everything relating to the schedule keeping.
@@ -244,6 +283,7 @@ class Schedule:
         while True:
             if not self.times:
                 self.utils.speech.say_and_print("Congratulations. Seems like we're all done for today!")
+                while not self.times: time.sleep(0.1)
             current_time = int(self.utils.get_current_time())
             if current_time not in self.times:
                 time.sleep(40)
