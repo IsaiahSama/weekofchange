@@ -4,6 +4,7 @@ import os
 import pyttsx3
 import time
 import errors
+import speech_recognition as sr
 
 from dataclasses import dataclass, field
 from config import load_yaml
@@ -53,6 +54,7 @@ class Utils:
             with open(day_file, "w") as fp:
                 fp.write(f"# {day}'s schedule goes here. Format: time_in_24_hours: task")
 
+        self.thread_this_func(self.speech.speak)
         self.speech.say_and_print("Everything has been setup correctly!!")
 
     def get_file_name(self, day:str) -> str:
@@ -117,30 +119,40 @@ class Speech:
     
     Attrs:
         engine: The Text to speech engine being used
+        messages (list): List of messages to be read
     Methods:
         setup(): Used to setup the Text To Speech.
         say(message:str): Used to speak a given message.
-        say_and_print(message:str): Prints a message to the screen, and says it as well."""
+        say_and_print(message:str): Prints a message to the screen, and says it as well.
+        speak(message:str): Stores messages to be output in a queue."""
+
+    messages = []
 
     def __init__(self) -> None:
         self.engine = None
-        self.setup()
+        # self.setup()
 
-    def setup(self):
-        self.engine = pyttsx3.init()
+    def setup_engine(self):
+        """Sets up the pyttsx3 engine for usage.
         
-        self.engine.setProperty('rate', Constants.speech_rate)
-        self.engine.setProperty('voice', Constants.speech_voice)
-        self.engine.setProperty('volume', Constants.speech_volume)
+        Returns the engine"""
+        engine = pyttsx3.init()
+        
+        engine.setProperty('rate', Constants.speech_rate)
+        engine.setProperty('voice', Constants.speech_voice)
+        engine.setProperty('volume', Constants.speech_volume)
+
+        return engine
 
     def say(self, message:str):
-        """Method that uses text to speech to read out a given message.
+        """Method that queues a message to be read by tts.
         
         Args:
-            message(str): The message to be read."""
+            message(str): The message to be queue."""
 
-        self.engine.say(message)
-        self.engine.runAndWait()
+        print(message, "has been added to the queue.")
+        self.messages.append(message)
+        
 
     def say_and_print(self, message:str):
         """Used to display a message to the screen, and read it out loud as well.
@@ -150,6 +162,19 @@ class Speech:
 
         print(message)
         self.say(message)
+
+    def speak(self):
+        """Reads a message from the queue"""
+
+        while True:
+            print(self.messages)
+            while not self.messages: time.sleep(0.1)
+            message = self.messages.pop(0)
+            engine = self.setup_engine()
+            engine.say(message)
+            engine.runAndWait()
+            engine.stop()
+
 
 class Schedule:
     """Class which actually manages everything relating to the schedule keeping.
