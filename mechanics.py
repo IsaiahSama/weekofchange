@@ -137,8 +137,9 @@ class Speech:
         Returns the engine"""
         engine = pyttsx3.init()
         
+        voices = engine.getProperty('voices')
         engine.setProperty('rate', Constants.speech_rate)
-        engine.setProperty('voice', Constants.speech_voice)
+        engine.setProperty('voice',voices[Constants.speech_voice].id)
         engine.setProperty('volume', Constants.speech_volume)
 
         return engine
