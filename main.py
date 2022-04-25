@@ -35,7 +35,13 @@ class Main:
         self.utils.setup()
         self.schedule = mechanics.Schedule(self.utils)
         self.schedule.load_schedule()
-        self.schedule.start_threads()
+        try:
+            self.schedule.start_threads()
+        except KeyboardInterrupt:
+            raise
+        except Exception as err:
+            print(err)
+            raise
         
         # recog = mechanics.SpeechRecog()
 
