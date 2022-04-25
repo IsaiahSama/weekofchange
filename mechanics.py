@@ -242,7 +242,7 @@ class Schedule:
         
     def load_schedule(self):
         """Method used to load the current schedule into memory."""
-
+        print("Schedule has been loaded.")
         filename = self.utils.get_file_name(self.current_day.title())
         with open(filename) as fp:
             lines = fp.readlines()
@@ -263,9 +263,12 @@ class Schedule:
 
         self.tasks = tasks
         self.times = sorted(tasks)
+        print("Tasks:", tasks)
+        print("Times:", self.times)
 
     def watch_the_clock(self):
         """Method used to track the current day, and detect when the day changes. Will load the corresponding schedule."""
+        print("Watching the clock.")
         while True:
             current_day = self.utils.get_current_day()
             if current_day == self.current_day:
@@ -278,13 +281,14 @@ class Schedule:
 
     def track(self):
         """Method used to track the schedule for the current day"""
-        
+        print("Tracking Schedules")
         self.times = [time for time in self.times if time >= int(self.utils.get_current_time())]
         while True:
             if not self.times:
                 self.utils.speech.say_and_print("Congratulations. Seems like we're all done for today!")
                 while not self.times: time.sleep(0.1)
             current_time = int(self.utils.get_current_time())
+            print("The time is", current_time)
             if current_time not in self.times:
                 time.sleep(40)
                 continue
@@ -294,3 +298,4 @@ class Schedule:
             self.utils.speech.say_and_print(f"The time is {' '.join(self.utils.get_twelve_time(current_time))}. Your task is {self.tasks[current_time]}")
 
             self.times.remove(current_time)
+            print(self.times)
