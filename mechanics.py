@@ -273,7 +273,7 @@ class Schedule:
                 continue
             
             self.current_day = current_day
-            self.utils.speech.say("It's a new day and a new schedule!")
+            print("It's a new day and a new schedule!")
             self.load_schedule()
 
     def track(self):
