@@ -64,7 +64,7 @@ class Main:
             #         self.utils.speech.say("Apologies. Seems there is a request error. I have sent it to the screen for your viewing.")
             #         print(err)
 
-            sleep(5)
+            sleep(0.1)
 
 
 if __name__ == "__main__":

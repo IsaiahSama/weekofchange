@@ -91,7 +91,7 @@ class Utils:
                 hour = "0" + hour
         if len(minutes) <= 1:
             while len(minutes) != 2:
-                minutes = "0" + hour
+                minutes = "0" + minutes
         return hour + minutes
 
     def get_twelve_time(self, ftime:int) -> tuple[int, int]:
@@ -112,12 +112,12 @@ class Utils:
 
         thread = Thread(target=func, args=args, daemon=True)
         thread.start()
+        print("Started thread for function", func.__name__)
 
 class Speech:
     """Class responsible for the setup and handling of the Text To Speech
     
     Attrs:
-        engine: The Text to speech engine being used
         messages (list): List of messages to be read
     Methods:
         setup(): Used to setup the Text To Speech.
@@ -128,8 +128,9 @@ class Speech:
     messages = []
 
     def __init__(self) -> None:
-        self.engine = None
+        # self.engine = None
         # self.setup()
+        pass
 
     def setup_engine(self):
         """Sets up the pyttsx3 engine for usage.
@@ -165,13 +166,16 @@ class Speech:
     def speak(self):
         """Reads a message from the queue"""
 
+        print("Waiting for messages to be sent to the queue ")
         while True:
             while not self.messages: time.sleep(0.1)
+            print("We have a message in the queue")
             message = self.messages.pop(0)
             engine = self.setup_engine()
             engine.say(message)
             engine.runAndWait()
             engine.stop()
+            print("Message read")
 
 # class SpeechRecog:
 #     """Class used to manage recognition of speech and executing commands.
@@ -283,6 +287,7 @@ class Schedule:
         """Method used to track the schedule for the current day"""
         print("Tracking Schedules")
         self.times = [time for time in self.times if time >= int(self.utils.get_current_time())]
+        print(self.times)
         while True:
             if not self.times:
                 self.utils.speech.say_and_print("Congratulations. Seems like we're all done for today!")
