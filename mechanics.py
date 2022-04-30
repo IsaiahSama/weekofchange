@@ -176,13 +176,11 @@ class Speech:
         print("Waiting for messages to be sent to the queue ")
         while True:
             while not self.messages: time.sleep(0.1)
-            print("We have a message in the queue")
             message = self.messages.pop(0)
             engine = self.setup_engine()
             engine.say(message)
             engine.runAndWait()
             engine.stop()
-            print("Message read")
 
 # class SpeechRecog:
 #     """Class used to manage recognition of speech and executing commands.
@@ -326,7 +324,7 @@ class Schedule:
                 self.utils.speech.say_and_print("Congratulations. Seems like we're all done for today!")
                 while not self.times: time.sleep(0.1)
             current_time = int(self.utils.get_current_time())
-            print("The time is", current_time)
+            print("The time is", current_time, "\r")
             if current_time not in self.times:
                 time.sleep(40)
                 continue
@@ -336,4 +334,3 @@ class Schedule:
             self.utils.speech.say_and_print(f"The time is {' '.join(self.utils.get_twelve_time(current_time))}. Your task is {self.tasks[current_time]}")
 
             self.times.remove(current_time)
-            print(self.times)
