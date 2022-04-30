@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "9e4dcb2be2a919e5c51c3ec50c16558ccded29d3cd9bfa4bb9127cbf01380e12"
+            "sha256": "36f7987d64c646f12733b76b85a9054e69d71003844928bf84b73729b21bdb5a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,6 +23,13 @@
             ],
             "markers": "platform_system == 'Windows'",
             "version": "==1.1.11"
+        },
+        "pyaudio": {
+            "hashes": [
+                "sha256:50c5bd3401bc33b9f58a7c8005841575354a8b4d3293e68ccc4db59d31f18f9a"
+            ],
+            "path": "./PyAudio-0.2.11-cp310-cp310-win_amd64.whl",
+            "version": "==0.2.11"
         },
         "pypiwin32": {
             "hashes": [

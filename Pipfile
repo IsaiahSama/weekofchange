@@ -7,6 +7,7 @@ name = "pypi"
 pyttsx3 = "*"
 pyyaml = "*"
 wheel = "*"
+pyaudio = {path = "./PyAudio-0.2.11-cp310-cp310-win_amd64.whl"}
 
 [dev-packages]
 
