@@ -293,11 +293,11 @@ class Schedule:
 
         for k, v in day_tasks.items():
             if k in tasks_for_today:
-                self.utils.speech.say_and_print("Task for", v, "to be done at", k, "is to be done at the same time as", tasks_for_today[k], "from the daily tasks.")
+                self.utils.speech.say_and_print("Task for", v, "to be done at", str(k)[:-2], str(k)[-2:], "is to be done at the same time as", tasks_for_today[k].strip("."), "from the daily tasks.")
 
         tasks_for_today.update(day_tasks)
 
-        self.tasks, self.times = tasks_for_today.items(), sorted(tasks_for_today)
+        self.tasks, self.times = tasks_for_today.copy(), sorted(tasks_for_today)
         print("Tasks:", self.tasks)
         print("Times:", self.times)
 
@@ -318,13 +318,13 @@ class Schedule:
         """Method used to track the schedule for the current day"""
         print("Tracking Schedules")
         self.times = [time for time in self.times if time >= int(self.utils.get_current_time())]
-        print(self.times)
+        print("Remaining times:", self.times)
         while True:
             if not self.times:
                 self.utils.speech.say_and_print("Congratulations. Seems like we're all done for today!")
                 while not self.times: time.sleep(0.1)
             current_time = int(self.utils.get_current_time())
-            print("The time is", current_time, "\r")
+            print("The time is", current_time, "\r", end="")
             if current_time not in self.times:
                 time.sleep(40)
                 continue
