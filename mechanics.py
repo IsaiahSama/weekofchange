@@ -1,6 +1,7 @@
 """File responsible for most of the mechanics that will be used throughout this program."""
 
 import os
+from typing import List
 import pyttsx3
 import time
 import errors
@@ -14,7 +15,7 @@ config = load_yaml()
 
 @dataclass
 class Constants:
-    days:list = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    days:list = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "daily")
     folder_path: str = config["folder_location"]
     speech_rate: int = config["text_to_speech"]['rate']
     speech_volume: float = config["text_to_speech"]['volume']
@@ -65,7 +66,12 @@ class Utils:
         Returns:
             str"""
 
-        return os.path.join(Constants.folder_path, day + ".txt")
+        path = os.path.join(Constants.folder_path, day + ".txt")
+        if not os.path.exists(path):
+            print("The file", path, "does not exist. Creating now.")
+            with open(path, "w"):
+                pass
+        return path
 
     def get_current_day(self) -> str:
         """Returns the current day.
@@ -122,7 +128,7 @@ class Speech:
     Methods:
         setup(): Used to setup the Text To Speech.
         say(message:str): Used to speak a given message.
-        say_and_print(message:str): Prints a message to the screen, and says it as well.
+        say_and_print(*args): Prints a message to the screen, and says it as well.
         speak(message:str): Stores messages to be output in a queue."""
 
     messages = []
@@ -154,12 +160,13 @@ class Speech:
         self.messages.append(message)
         
 
-    def say_and_print(self, message:str):
+    def say_and_print(self, *args):
         """Used to display a message to the screen, and read it out loud as well.
         
         Args:
-            message(str): The message to be displayed and read."""
+            *args: The message to be displayed and read."""
 
+        message = ' '.join(str(arg) for arg in args)
         print(message)
         self.say(message)
 
@@ -231,6 +238,7 @@ class Schedule:
         load_schedule(): Method used to load the current day's schedule into memory
         watch_the_clock(): Method used for watching the clock, to determine when a new day has begun 
         track(): Used to track the schedule for the current day.
+        get_tasks(file_info:list, filename): Used to get all tasks from within a file
     """
 
     def __init__(self, utils:Utils) -> None:
@@ -243,16 +251,19 @@ class Schedule:
         """All threaded functions for this class that are to be threaded, goes here."""
         self.utils.thread_this_func(self.watch_the_clock)
         self.utils.thread_this_func(self.track)
+
+    def get_tasks(self, file_info:List[str], filename:str) -> dict:
+        """Method used to get all schedules from a given filename.
         
-    def load_schedule(self):
-        """Method used to load the current schedule into memory."""
-        print("Schedule has been loaded.")
-        filename = self.utils.get_file_name(self.current_day.title())
-        with open(filename) as fp:
-            lines = fp.readlines()
-        
+        Args:
+            file_info (List[str]): The info from the file returned from file_pointer.readlines()
+            filename (str): The name of the file.
+            
+        Returns:
+            dict"""
+
         tasks = {}
-        for line in lines:
+        for line in file_info:
             line = line.strip("\n").strip()
             if not line or line.startswith("#"): continue
             try:
@@ -262,12 +273,34 @@ class Schedule:
                 task = ':'.join(line.split(":")[1:])
             except Exception as err:
                 raise errors.BadDayInformation(line, filename, err)
-            
+        
             tasks[start_time] = task
 
-        self.tasks = tasks
-        self.times = sorted(tasks)
-        print("Tasks:", tasks)
+        return tasks
+        
+    def load_schedule(self):
+        """Method used to load the current schedule into memory."""
+        print("Schedule has been loaded.")
+        filename = self.utils.get_file_name(self.current_day.title())
+        daily = self.utils.get_file_name("daily")
+
+        with open(daily) as fp:
+            d_tasks = fp.readlines()
+
+        with open(filename) as fp:
+            lines = fp.readlines()
+        
+        tasks_for_today = self.get_tasks(d_tasks, daily)
+        day_tasks = self.get_tasks(lines, filename)
+
+        for k, v in day_tasks.items():
+            if k in tasks_for_today:
+                self.utils.speech.say_and_print("Task for", v, "to be done at", k, "is to be done at the same time as", tasks_for_today[k], "from the daily tasks.")
+
+        tasks_for_today.update(day_tasks)
+
+        self.tasks, self.times = tasks_for_today.items(), sorted(tasks_for_today)
+        print("Tasks:", self.tasks)
         print("Times:", self.times)
 
     def watch_the_clock(self):
