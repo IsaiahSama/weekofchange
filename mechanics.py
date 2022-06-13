@@ -48,14 +48,12 @@ class Utils:
             except Exception as err:
                 print("An error occurred while trying to make the required files:", err)
                 raise SystemExit
+            self.speech.say_and_print("Hey, nice to meet you! I look forward to serving all of your scheduling needs.")
             self.speech.say_and_print("\n\nView the files in the newly created schedules folder to set your schedules.\n")
 
         for day in Constants.days:
-            day_file = self.get_file_name(day)
-            if os.path.exists(day_file): continue
-            with open(day_file, "w") as fp:
-                fp.write(f"# {day}'s schedule goes here. Format: time_in_24_hours: task")
-
+            self.get_file_name(day)
+            
         self.speech.say_and_print("Everything has been setup correctly!!")
 
     def get_file_name(self, day:str) -> str:
@@ -70,8 +68,9 @@ class Utils:
         path = os.path.join(Constants.folder_path, day + ".txt")
         if not os.path.exists(path):
             print("The file", path, "does not exist. Creating now.")
-            with open(path, "w"):
-                pass
+            with open(path, "w") as fp:
+                fp.write(f"# {day}'s schedule goes here. Format: time_in_24_hours: task. Example\n600: Wake Up")
+                
         return path
 
     def get_current_day(self) -> str:
