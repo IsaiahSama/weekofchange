@@ -41,12 +41,14 @@ class Utils:
     def setup(self):
         """Method used to setup the data that the program needs to function."""
 
+        self.thread_this_func(self.speech.speak)
         if not os.path.exists(Constants.folder_path):
             try:
                 os.mkdir(Constants.folder_path)
             except Exception as err:
                 print("An error occurred while trying to make the required files:", err)
                 raise SystemExit
+            self.speech.say_and_print("\n\nView the files in the newly created schedules folder to set your schedules.\n")
 
         for day in Constants.days:
             day_file = self.get_file_name(day)
@@ -54,7 +56,6 @@ class Utils:
             with open(day_file, "w") as fp:
                 fp.write(f"# {day}'s schedule goes here. Format: time_in_24_hours: task")
 
-        self.thread_this_func(self.speech.speak)
         self.speech.say_and_print("Everything has been setup correctly!!")
 
     def get_file_name(self, day:str) -> str:
