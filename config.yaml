@@ -3,5 +3,5 @@
 folder_location: ./schedules/  # This is where the location for the schedules should be placed
 text_to_speech:
   rate: 200 # How fast the text to speech speaks. 200 is a basic rate.
-  voice: 1 # Whether the voice is male or female. Options are 1 for male, 0 for female
+  voice: 1 # Whether the voice is male or female. Options are 0 for male, 1 for female
   volume: 1.0 # How loud the voice should be. Ranges from 0.0 to 1.0
