@@ -298,8 +298,10 @@ class Schedule:
         tasks_for_today.update(day_tasks)
 
         self.tasks, self.times = tasks_for_today.copy(), sorted(tasks_for_today)
-        print("Tasks:", self.tasks)
-        print("Times:", self.times)
+        print("\n","-"*60)
+        for time, task in self.tasks.items():
+            print(f"\t{time}\t\t{task}".ljust(25))
+        print("-"*60, "\n")
 
     def watch_the_clock(self):
         """Method used to track the current day, and detect when the day changes. Will load the corresponding schedule."""
