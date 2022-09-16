@@ -299,7 +299,7 @@ class Schedule:
 
         self.tasks, self.times = tasks_for_today.copy(), sorted(tasks_for_today)
         print("\n","-"*60)
-        for time, task in self.tasks.items():
+        for time, task in sorted(self.tasks.items(), key=lambda x: x[0] ):
             print(f"\t{time}\t\t{task}".ljust(25))
         print("-"*60, "\n")
 
